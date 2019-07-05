@@ -1,2 +1,2 @@
 # CertOrgAutoRepo
-Cert Org Auto Repo
+This repository is for the Test Automation framework code.
