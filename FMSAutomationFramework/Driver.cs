@@ -1,0 +1,31 @@
+﻿using CertsureAutomationFramework.Helpers;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium;
+using System;
+using System.Threading;
+
+namespace CertsureAutomationFramework
+{
+    public class Driver
+    {
+        public static IWebDriver Instance { get; set; }
+
+        public static void initialize(TestContext context)
+        {
+            Instance = BrowserHelper.GetDriver(context); 
+            Instance.Manage().Window.Maximize();
+            //context.Properties["driver"] = Instance; storing the driver instance
+        }
+
+        public static void Close()
+        {
+            Instance.Close();
+            Instance.Quit();
+        }
+
+        public static void Wait(int numberOfMilliSeconds)
+        {
+            Thread.Sleep(numberOfMilliSeconds);
+        }
+    }
+}

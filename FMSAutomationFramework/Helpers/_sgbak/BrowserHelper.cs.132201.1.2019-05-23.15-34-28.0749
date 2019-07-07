@@ -1,0 +1,72 @@
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
+using System.IO;
+using System.Reflection;
+
+namespace CertsureAutomationFramework.Helpers
+{
+    public class BrowserHelper
+    {
+        public static IWebDriver GetDriver(TestContext context)
+        {
+            IWebDriver webdriver;
+            var preferedbrowser = TestSettings.Default.Browser;
+            if (TestSettings.Default.Location.ToLower() == "local")
+            {
+                //run locally
+                switch (preferedbrowser.ToLower())
+                {
+                    case "chrome":
+                        {
+                            var options = GetChromeOptions(context);
+                            webdriver = new ChromeDriver(options);
+                            break;
+                        }
+                    default:
+                        {
+                            FirefoxOptions options = new FirefoxOptions();
+                            options.AddArgument("-private");
+                            webdriver = new FirefoxDriver(options);
+                            break;
+                        }
+
+                }
+            }
+            else
+            {
+                //run in browserStack
+                webdriver = RemoteBrowserHelper.GetDriver(preferedbrowser, context);
+            }
+            return webdriver;
+        }
+        private static ChromeOptions GetChromeOptions(TestContext context)
+        {
+            // var downloadDirectory = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory.FullName;
+            //downloadDirectory = Path.Combine(downloadDirectory, "pdfDownload"); C:\temp\PDFDownload
+            context.Properties["SFUN"].ToString();
+            var downloadDirectory = "";// "C:\\temp\\PDFDownload";
+            downloadDirectory = context.Properties["DownloadPath"].ToString();
+
+            var options = new ChromeOptions();
+            options.AddArgument("--lang=en-GB");
+            options.AddArgument("--disable-extensions");
+            options.AddArgument("--disable-web-security");
+            options.AddArgument("--disable-plugins");
+            options.AddArgument("--start-maximized");
+            options.AddArgument("--enable-logging");
+            options.AddArgument("--disable-popup-blocking");
+            options.AddArgument("--incognito");
+            options.AddArgument("--enable-javascript");
+            options.AddArgument("--allow-running-insecure-content");
+            options.AddArgument("--javascript-harmony");
+            //options.AddUserProfilePreference("download.default_directory", downloadDirectory);
+            options.AddUserProfilePreference("download.default_directory", downloadDirectory);
+            options.AddUserProfilePreference("download.prompt_for_download", false);
+            options.AddUserProfilePreference("disable-popup-blocking", "true");
+
+            return options;
+        }
+    }
+}
